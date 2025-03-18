@@ -1,18 +1,31 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_login import LoginManager
 from models import db
-from routes import checkout, checkin, active_racers, trail_status, register, login, logout
+from routes import routes
+
+# Load environment variables from .env file (EXPLICIT PATH)
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 # Initialize Flask App
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@localhost/race_db'
+
+# Database Configuration (Using Env Variables)
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize Database & Migrations
+# Initialize Database
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -23,7 +36,6 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 # Register Routes
-from routes import routes
 app.register_blueprint(routes)
 
 

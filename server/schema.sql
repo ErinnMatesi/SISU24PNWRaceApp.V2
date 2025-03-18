@@ -40,9 +40,14 @@ CREATE TABLE trails (
     time_limit_minutes INT NOT NULL  -- store max expected time per trail, for safety flag
 );
 
--- Add SISU Service as a special "trail"
--- INSERT INTO trails (TrailName, Distance, ElevationGain, BasePoints, FirstTenPoints, SecondTenPoints, ping_pong_balls_remaining, crystals_remaining)
--- VALUES ('SISU Service', 0, 0, 0, NULL, NULL, NULL, NULL);
+-- Create the bonus objectives table
+CREATE TABLE bonusobjectives (
+    ObjectiveID INT AUTO_INCREMENT PRIMARY KEY,
+    Description TEXT,
+    AssociatedTrailID INT DEFAULT NULL,
+    BonusPoints INT DEFAULT NULL,
+    FOREIGN KEY (AssociatedTrailID) REFERENCES trails(TrailID)
+);
 
 -- Create the race entries table (logs check-ins and check-outs)
 CREATE TABLE raceentries (
@@ -71,11 +76,3 @@ CREATE TABLE racertrailmap (
     FOREIGN KEY (TrailID) REFERENCES trails(TrailID)
 );
 
--- Create the bonus objectives table
-CREATE TABLE bonusobjectives (
-    ObjectiveID INT AUTO_INCREMENT PRIMARY KEY,
-    Description TEXT,
-    AssociatedTrailID INT DEFAULT NULL,
-    BonusPoints INT DEFAULT NULL,
-    FOREIGN KEY (AssociatedTrailID) REFERENCES trails(TrailID)
-);
