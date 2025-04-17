@@ -4,7 +4,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
-from flask_login import LoginManager
 from models import db
 from routes import routes
 
@@ -29,11 +28,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Initialize SocketIO & Login Manager
+# Initialize SocketIO
 socketio = SocketIO(app, cors_allowed_origins="*")
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
 
 # Register Routes
 app.register_blueprint(routes)

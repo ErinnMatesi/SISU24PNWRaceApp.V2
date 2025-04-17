@@ -37,10 +37,17 @@ def get_racer(id):
 @routes.route("/racers", methods=["POST"])
 def add_racer():
     data = request.json
+
+    # Duplicate BibNumber check
+    existing = Racer.query.filter_by(bib_number=data["bib_number"]).first()
+    if existing:
+        return jsonify({"error": "Bib number already exists"}), 400
+
     new_racer = Racer(**data)
     db.session.add(new_racer)
     db.session.commit()
     return jsonify({"message": "Racer added successfully!"}), 201
+
 
 @routes.route("/racers/<int:id>", methods=["PUT"])
 def update_racer(id):
@@ -167,6 +174,12 @@ def get_team(id):
 @routes.route("/teams", methods=["POST"])
 def add_team():
     data = request.json
+
+    # Check for existing team name
+    existing = Team.query.filter_by(team_name=data["team_name"]).first()
+    if existing:
+        return jsonify({"error": "Team name already exists"}), 400
+    
     new_team = Team(**data)
     db.session.add(new_team)
     db.session.commit()

@@ -15,7 +15,7 @@ CREATE TABLE racers (
     RacerID INT AUTO_INCREMENT PRIMARY KEY,
     Gender ENUM('Male','Female','Nonbinary') NOT NULL,
     Age INT DEFAULT NULL,
-    BibNumber INT NOT NULL,
+    BibNumber INT NOT NULL UNIQUE,
     Division ENUM('100 milers','24hr individual','24hr team') NOT NULL,
     TeamID INT DEFAULT NULL,
     FirstName VARCHAR(255) DEFAULT NULL,
