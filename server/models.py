@@ -62,12 +62,16 @@ class RaceEntry(db.Model):
 
 # Teams Model
 class Team(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    team_name = db.Column(db.String(255), nullable=False, unique=True)
-    total_points = db.Column(db.Integer, default=0)
+    __tablename__ = 'teams'
+
+    id = db.Column("TeamID", db.Integer, primary_key=True)
+    team_name = db.Column("TeamName", db.String(255), nullable=False, unique=True)
+    total_points = db.Column("TotalPoints", db.Integer, default=0)
+
 
 # Bonus Objectives Model
 class BonusObjective(db.Model):
+    __tablename__ = 'bonusobjectives'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text, nullable=False)
     associated_trail_id = db.Column(db.Integer, db.ForeignKey('trail.id'), nullable=True)
