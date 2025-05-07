@@ -38,7 +38,15 @@ def get_racer(id):
 def add_racer():
     data = request.json
 
-    # Duplicate BibNumber check
+    # Convert empty team_id to None
+    if "team_id" in data and data["team_id"] == "":
+        data["team_id"] = None
+
+    required_fields = ["bib_number", "first_name", "last_name", "gender", "division"]
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return jsonify({"error": f"'{field}' is required"}), 400
+
     existing = Racer.query.filter_by(bib_number=data["bib_number"]).first()
     if existing:
         return jsonify({"error": "Bib number already exists"}), 400
@@ -64,6 +72,20 @@ def delete_racer(id):
     db.session.delete(racer)
     db.session.commit()
     return jsonify({"message": "Racer deleted successfully!"})
+
+# GET RACER BY BIBNUMBER
+@routes.route("/racers/by-bib/<int:bib_number>", methods=["GET"])
+def get_racer_by_bib(bib_number):
+    racer = Racer.query.filter_by(bib_number=bib_number).first()
+    if not racer:
+        return jsonify({"error": "Racer not found"}), 404
+    
+    return jsonify({
+        "racer_id": racer.id,
+        "first_name": racer.first_name,
+        "last_name": racer.last_name
+    })
+
 
 # ------------------------------------
 # TRAILS ROUTES
@@ -175,7 +197,6 @@ def get_team(id):
 def add_team():
     data = request.json
 
-    # Check for existing team name
     existing = Team.query.filter_by(team_name=data["team_name"]).first()
     if existing:
         return jsonify({"error": "Team name already exists"}), 400
@@ -216,3 +237,93 @@ def add_bonus_objective():
     db.session.add(new_bonus_objective)
     db.session.commit()
     return jsonify({"message": "Bonus Objective added successfully!"}), 201
+
+# ------------------------------------
+# RACERTRAILMAP ROUTES
+# ------------------------------------
+
+@routes.route("/racertrailmap/<int:racer_id>", methods=["GET"])
+def get_active_trail(racer_id):
+    entry = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
+    if not entry:
+        return jsonify({"message": "Racer is not currently on any trail"}), 404
+    return jsonify({
+        "id": entry.id,
+        "racer_id": entry.racer_id,
+        "trail_id": entry.trail_id,
+        "start_time": entry.start_time
+    })
+
+@routes.route("/racertrailmap", methods=["POST"])
+def add_racer_trail_map():
+    data = request.json
+    
+    existing_entry = RacerTrailMap.query.filter_by(racer_id=data["racer_id"]).first()
+    if existing_entry:
+        return jsonify({"error": "Racer is already on a trail"}), 400
+    
+    new_entry = RacerTrailMap(**data)
+    db.session.add(new_entry)
+    db.session.commit()
+    return jsonify({"message": "Racer checked out successfully!"}), 201
+
+@routes.route("/racertrailmap/<int:racer_id>", methods=["DELETE"])
+def remove_racer_trail_map(racer_id):
+    entry = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
+    if not entry:
+        return jsonify({"error": "Racer is not currently on a trail"}), 404
+    
+    db.session.delete(entry)
+    db.session.commit()
+    return jsonify({"message": "Racer checked in successfully!"}), 200
+
+# ------------------------------------
+# ACTIVE RUNNERS/LEADERBOARD Routes
+# ------------------------------------
+
+@routes.route("/active-runners", methods=["GET"])
+def get_active_runners():
+    try:
+        # Query for all active runners from the racertrailmap table
+        active_runners = db.session.execute(
+            """
+            SELECT r.RacerID, r.FirstName, r.LastName, m.StartTime
+            FROM racers r
+            JOIN racertrailmap m ON r.RacerID = m.RacerID
+            ORDER BY m.StartTime ASC
+            """
+        ).fetchall()
+
+        # Format the response
+        runners_list = [
+            {
+                "racer_id": runner.RacerID,
+                "first_name": runner.FirstName,
+                "last_name": runner.LastName,
+                "start_time": runner.StartTime.strftime("%Y-%m-%d %H:%M:%S")
+            }
+            for runner in active_runners
+        ]
+
+        return jsonify(runners_list), 200
+
+    except Exception as e:
+        print(f"Error fetching active runners: {e}")
+        return jsonify({"error": "Failed to fetch active runners"}), 500
+
+@routes.route("/active-entries/<int:bib_number>", methods=["GET"])
+def get_active_entry(bib_number):
+    racer = Racer.query.filter_by(bib_number=bib_number).first()
+    if not racer:
+        return jsonify({"error": "Racer not found"}), 404
+
+    active_entry = RacerTrailMap.query.filter_by(racer_id=racer.id).first()
+    if not active_entry:
+        return jsonify({"error": "No active entry found"}), 404
+
+    trail = Trail.query.get(active_entry.trail_id)
+    return jsonify({
+        "trail_id": trail.id,
+        "trail_name": trail.name,
+        "start_time": active_entry.start_time
+    })
