@@ -43,22 +43,27 @@ class Trail(db.Model):
 
 # Racer-Trail Mapping Model (Active Racers)
 class RacerTrailMap(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    racer_id = db.Column(db.Integer, db.ForeignKey('racer.id'), unique=True, nullable=False)
-    trail_id = db.Column(db.Integer, db.ForeignKey('trail.id'), nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = "racertrailmap"
+    
+    id = db.Column("ID", db.Integer, primary_key=True, autoincrement=True)
+    racer_id = db.Column("RacerID", db.Integer, db.ForeignKey("racers.RacerID"), unique=True, nullable=False)
+    trail_id = db.Column("TrailID", db.Integer, db.ForeignKey("trails.TrailID"), nullable=False)
+    start_time = db.Column("StartTime", db.DateTime, default=datetime.utcnow)
 
 # Race Entries Model (Tracks Check-ins/Check-outs)
 class RaceEntry(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    racer_id = db.Column(db.Integer, db.ForeignKey('racer.id'), nullable=False)
-    trail_id = db.Column(db.Integer, db.ForeignKey('trail.id'), nullable=True)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
-    end_time = db.Column(db.DateTime, nullable=True)
-    points_earned = db.Column(db.Integer, default=0)
-    bonus_points_earned = db.Column(db.Integer, default=0)
-    bonus_objective_id = db.Column(db.Integer, db.ForeignKey('bonus_objective.id'), nullable=True)
-    distress_flag = db.Column(db.Boolean, default=False)
+    __tablename__ = "raceentries"
+    
+    id = db.Column("EntryID", db.Integer, primary_key=True, autoincrement=True)
+    racer_id = db.Column("RacerID", db.Integer, db.ForeignKey("racers.RacerID"), nullable=False)
+    trail_id = db.Column("TrailID", db.Integer, db.ForeignKey("trails.TrailID"), nullable=True)
+    start_time = db.Column("StartTime", db.DateTime, default=datetime.utcnow)
+    end_time = db.Column("EndTime", db.DateTime, nullable=True)
+    points_earned = db.Column("PointsEarned", db.Integer, default=0)
+    bonus_points_earned = db.Column("BonusPointsEarned", db.Integer, default=0)
+    bonus_objective_id = db.Column("BonusObjectiveID", db.Integer, db.ForeignKey("bonusobjectives.ObjectiveID"), nullable=True)
+    bonus_objective_description = db.Column("BonusObjectiveDescription", db.String(255), nullable=True)
+    distress_flag = db.Column("distress_flag", db.Boolean, default=False)
 
 # Teams Model
 class Team(db.Model):
@@ -71,8 +76,10 @@ class Team(db.Model):
 
 # Bonus Objectives Model
 class BonusObjective(db.Model):
-    __tablename__ = 'bonusobjectives'
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text, nullable=False)
-    associated_trail_id = db.Column(db.Integer, db.ForeignKey('trail.id'), nullable=True)
-    bonus_points = db.Column(db.Integer, default=0)
+    __tablename__ = "bonusobjectives"
+    
+    id = db.Column("ObjectiveID", db.Integer, primary_key=True, autoincrement=True)
+    description = db.Column("Description", db.Text, nullable=False)
+    associated_trail_id = db.Column("AssociatedTrailID", db.Integer, db.ForeignKey("trails.TrailID"), nullable=True)
+    bonus_points = db.Column("BonusPoints", db.Integer, default=0)
+

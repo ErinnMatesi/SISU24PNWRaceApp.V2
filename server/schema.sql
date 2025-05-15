@@ -71,7 +71,7 @@ CREATE TABLE racertrailmap (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     RacerID INT NOT NULL UNIQUE,  -- Ensures a racer can only have ONE active trail at a time
     TrailID INT NOT NULL,
-    StartTime DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Tracks when they checked out (started)
+    StartTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (RacerID) REFERENCES racers(RacerID),
     FOREIGN KEY (TrailID) REFERENCES trails(TrailID)
 );
