@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, Racer, Trail, RaceEntry, Team, BonusObjective
+from models import db, Racer, Trail, RaceEntry, Team, BonusObjective, RacerTrailMap
 from datetime import datetime
 
 routes = Blueprint("routes", __name__)
@@ -170,6 +170,181 @@ def get_race_entry(id):
         "bonus_points_earned": entry.bonus_points_earned,
         "bonus_objective_id": entry.bonus_objective_id
     })
+
+@routes.route("/raceentry/checkout", methods=["POST"])
+def check_out():
+    try:
+        data = request.json
+        racer_id = data.get("racer_id")
+        trail_id = data.get("trail_id")
+
+        # Validate inputs
+        if not racer_id or not trail_id:
+            return jsonify({"error": "Racer ID and Trail ID are required."}), 400
+
+        # Ensure the racer is not already on a trail
+        active_map = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
+        if active_map:
+            return jsonify({"error": "Racer is already out on a trail."}), 400
+
+        # Fetch trail details for confirmation message
+        trail = Trail.query.filter_by(TrailID=trail_id).first()
+        if not trail:
+            return jsonify({"error": "Trail not found."}), 404
+
+        # Create a new race entry
+        new_entry = RaceEntry(
+            racer_id=racer_id,
+            trail_id=trail_id,
+            start_time=datetime.utcnow()
+        )
+        db.session.add(new_entry)
+
+        # Add to racer trail map
+        new_map_entry = RacerTrailMap(
+            racer_id=racer_id,
+            trail_id=trail_id,
+            start_time=datetime.utcnow()
+        )
+        db.session.add(new_map_entry)
+
+        # Commit changes
+        db.session.commit()
+
+        # Include trail name in response
+        return jsonify({
+            "message": f"Racer checked out successfully on {trail.TrailName}.",
+            "trail_name": trail.TrailName
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return jsonify({"error": "Failed to check out racer."}), 500
+
+    
+@routes.route("/raceentry/checkin/<int:racer_id>", methods=["PUT"])
+def check_in(racer_id):
+    try:
+        # Check for active trail map entry
+        active_trail_entry = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
+        
+        if not active_trail_entry:
+            return jsonify({"error": "No active trail found for this racer."}), 404
+        
+        # Get the associated trail directly from the active trail map
+        trail = Trail.query.filter_by(TrailID=active_trail_entry.trail_id).first()
+        if not trail:
+            return jsonify({"error": "Associated trail not found."}), 404
+        
+        # Extract trail attributes
+        base_points = trail.BasePoints
+        distance = trail.Distance
+        elevation_gain = trail.ElevationGain
+        first_ten_points = trail.FirstTenPoints or 0
+        second_ten_points = trail.SecondTenPoints or 0
+        
+        # Extract bonus type from the request
+        bonus_type = request.json.get("bonus_type", None)  # "first_ten" or "second_ten"
+        bonus_points = 0
+
+        # Apply the correct bonus based on the selected type
+        if bonus_type == "first_ten":
+            bonus_points = first_ten_points
+        elif bonus_type == "second_ten":
+            bonus_points = second_ten_points
+
+        # Total points earned for this trail
+        points_earned = base_points + bonus_points
+
+        # Update the active race entry
+        race_entry = RaceEntry.query.filter_by(racer_id=racer_id, trail_id=trail.TrailID, end_time=None).first()
+        if not race_entry:
+            return jsonify({"error": "No active race entry found for this racer."}), 404
+        
+        race_entry.end_time = datetime.utcnow()
+        race_entry.points_earned = points_earned
+        
+        # Update the racer's cumulative stats
+        racer = Racer.query.get(racer_id)
+        if not racer:
+            return jsonify({"error": "Racer not found."}), 404
+        
+        racer.total_points += points_earned
+        racer.total_miles += distance
+        racer.total_elevation_gain += elevation_gain
+
+        # Clean up active trail entry
+        db.session.delete(active_trail_entry)
+
+        # Commit all changes
+        db.session.commit()
+
+        return jsonify({
+            "message": f"Racer checked in successfully from {trail.TrailName}.",
+            "points_earned": points_earned,
+            "total_miles": racer.total_miles,
+            "total_elevation_gain": racer.total_elevation_gain,
+            "total_points": racer.total_points
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return jsonify({"error": "Failed to check in racer."}), 500
+
+
+@routes.route("/raceentry/bonuspoints", methods=["POST"])
+def add_bonus_points():
+    try:
+        data = request.json
+        racer_id = data.get("racer_id")
+        bonus_objective_id = data.get("bonus_objective_id")
+
+        # Validate inputs
+        if not racer_id or not bonus_objective_id:
+            return jsonify({"error": "Racer ID and Bonus Objective ID are required."}), 400
+
+        # Check if this bonus objective has already been assigned to this racer
+        existing_entry = RaceEntry.query.filter_by(
+            racer_id=racer_id, 
+            bonus_objective_id=bonus_objective_id
+        ).first()
+        if existing_entry:
+            return jsonify({"error": "This racer has already completed this bonus objective."}), 400
+
+        # Fetch the bonus objective to get points
+        bonus_objective = BonusObjective.query.filter_by(ObjectiveID=bonus_objective_id).first()
+        if not bonus_objective:
+            return jsonify({"error": "Bonus Objective not found."}), 404
+
+        # Create a race entry for the bonus points
+        new_entry = RaceEntry(
+            racer_id=racer_id,
+            start_time=datetime.utcnow(),
+            end_time=datetime.utcnow(),  # Bonus points are instant
+            points_earned=bonus_objective.BonusPoints,
+            bonus_objective_id=bonus_objective_id,
+            bonus_objective_description=bonus_objective.Description
+        )
+        db.session.add(new_entry)
+
+        # Update racer totals
+        racer = Racer.query.filter_by(id=racer_id).first()
+        if racer:
+            racer.total_points += bonus_objective.BonusPoints
+
+        # Commit changes
+        db.session.commit()
+
+        return jsonify({"message": "Bonus points assigned successfully."}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return jsonify({"error": "Failed to assign bonus points."}), 500
+
+
 
 # ------------------------------------
 # TEAMS ROUTES

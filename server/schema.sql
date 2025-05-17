@@ -37,7 +37,7 @@ CREATE TABLE trails (
     SecondTenPoints INT DEFAULT NULL,
     ping_pong_balls_remaining INT DEFAULT 10,
     crystals_remaining INT DEFAULT 10,
-    time_limit_minutes INT NOT NULL  -- store max expected time per trail, for safety flag
+    time_limit_minutes INT NOT NULL --safety flag
 );
 
 -- Create the bonus objectives table
@@ -57,9 +57,7 @@ CREATE TABLE raceentries (
     StartTime DATETIME DEFAULT NULL,
     EndTime DATETIME DEFAULT NULL,
     PointsEarned INT DEFAULT NULL,
-    BonusPointsEarned INT DEFAULT NULL,
     BonusObjectiveID INT DEFAULT NULL,
-    BonusObjectiveDescription VARCHAR(255) DEFAULT NULL,
     distress_flag BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (RacerID) REFERENCES racers(RacerID),
     FOREIGN KEY (TrailID) REFERENCES trails(TrailID),
