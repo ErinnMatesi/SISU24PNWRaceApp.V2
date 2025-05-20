@@ -1,54 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 export default function BibNumberLookup({ onRacerFound }) {
     const [bibNumber, setBibNumber] = useState("");
     const [racer, setRacer] = useState(null);
-    const [currentTrail, setCurrentTrail] = useState(null);
     const [message, setMessage] = useState("");
 
     const handleKeyPress = async (e) => {
-        if (e.key === "Enter" && bibNumber.trim() !== "") {
+        if (e.key !== "Enter" || !bibNumber.trim()) return;
+
+        try {
+            // Step 1: Fetch racer
+            const { data: racerData } = await axios.get(`/racers/bib/${bibNumber}`);
+
+            setRacer(racerData);
+
+            // Step 2: Attempt to fetch active trail
+            let activeTrail = null;
+
             try {
-                // Fetch racer details
-                const racerResponse = await axios.get(`/racers/bib/${bibNumber}`);
-                const racerData = racerResponse.data;
-
-                // Fetch active trail entry (if any)
-                const activeEntryResponse = await axios.get(`/active-trail/${bibNumber}`);
-                const activeEntry = activeEntryResponse.data;
-
-                // Set local state for display
-                setRacer(racerData);
-                
-                // Set message based on active trail status
-                if (activeEntry.trail_id) {
-                    setCurrentTrail(activeEntry);
-                    setMessage(
-                        `${racerData.first_name} ${racerData.last_name} is currently on ${activeEntry.trail_name}`
-                    );
-                } else {
-                    setCurrentTrail(null);
-                    setMessage(
-                        `${racerData.first_name} ${racerData.last_name} is not currently on a trail.`
-                    );
+                const { data } = await axios.get(`/active-trail/${racerData.racer_id}`);
+                activeTrail = data;
+            } catch (trailError) {
+                if (trailError.response?.status !== 404) {
+                    console.error("Error fetching active trail:", trailError);
                 }
-
-                // Inform parent component of found racer
-                onRacerFound({
-                    racer_id: racerData.id,
-                    first_name: racerData.first_name,
-                    last_name: racerData.last_name,
-                    active_trail_id: activeEntry.trail_id || null,
-                    active_trail_name: activeEntry.trail_name || null
-                });
-
-            } catch (error) {
-                console.error(error);
-                setMessage("❌ Racer not found or error retrieving data.");
-                setRacer(null);
-                setCurrentTrail(null);
             }
+
+            // Step 3: Set message
+            const name = `${racerData.first_name} ${racerData.last_name}`;
+            if (activeTrail?.trail_id) {
+                setMessage(`${name} is currently on ${activeTrail.trail_name}`);
+            } else {
+                setMessage(`${name} is not currently on a trail.`);
+            }
+
+            // Step 4: Notify parent
+            onRacerFound({
+                id: racerData.racer_id,
+                first_name: racerData.first_name,
+                last_name: racerData.last_name,
+                active_trail_id: activeTrail?.trail_id || null,
+                active_trail_name: activeTrail?.trail_name || null
+            });
+
+        } catch (err) {
+            console.error("Racer fetch failed:", err);
+            setRacer(null);
+            setMessage("❌ Racer not found or error retrieving data.");
         }
     };
 
@@ -61,7 +60,6 @@ export default function BibNumberLookup({ onRacerFound }) {
                 onKeyPress={handleKeyPress}
                 className="border rounded w-full p-2 mb-2"
             />
-            {racer && <p>{racer.first_name} {racer.last_name}</p>}
             {message && <p className="text-sm text-gray-600">{message}</p>}
         </div>
     );

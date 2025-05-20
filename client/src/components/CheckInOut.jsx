@@ -27,17 +27,8 @@ export default function CheckInOut() {
 
     const handleRacerFound = (foundRacer) => {
         setRacer(foundRacer);
-        if (foundRacer.active_trail_id) {
-            // Racer is checking IN from a trail
-            setIsCheckingIn(true);
-            setTrailID(foundRacer.active_trail_id);
-            setMessage(`${foundRacer.first_name} is currently on ${foundRacer.active_trail_name}.`);
-        } else {
-            // Racer is checking OUT to a trail
-            setIsCheckingIn(false);
-            setTrailID("");
-            setMessage(`${foundRacer.first_name} is not currently on a trail.`);
-        }
+        setIsCheckingIn(!!foundRacer.active_trail_id);
+        setTrailID(foundRacer.active_trail_id || "");
     };
 
     const handleCheckOut = async () => {
@@ -46,9 +37,14 @@ export default function CheckInOut() {
             return;
         }
 
+        console.log("Attempting checkout with:", {
+            racer_id: racer.id,
+            trail_id: Number(trailID)
+        });
+
         try {
-            await axios.post("/check-out", {
-                racer_id: racer.racer_id,
+            await axios.post("/raceentry/checkout", {
+                racer_id: racer.id,
                 trail_id: trailID,
             });
             setMessage(`✅ ${racer.first_name} checked out successfully!`);
@@ -67,8 +63,8 @@ export default function CheckInOut() {
         }
 
         try {
-            await axios.put("/check-in", {
-                racer_id: racer.racer_id,
+            await axios.put("/raceentry/checkin", {
+                racer_id: racer.id,
                 trail_id: trailID,
                 first_ten: firstTen,
                 second_ten: secondTen,

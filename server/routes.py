@@ -74,17 +74,18 @@ def delete_racer(id):
     return jsonify({"message": "Racer deleted successfully!"})
 
 # GET RACER BY BIBNUMBER
-@routes.route("/racers/by-bib/<int:bib_number>", methods=["GET"])
+@routes.route("/racers/bib/<int:bib_number>", methods=["GET"])
 def get_racer_by_bib(bib_number):
     racer = Racer.query.filter_by(bib_number=bib_number).first()
-    if not racer:
+    if racer is None:
         return jsonify({"error": "Racer not found"}), 404
-    
+
     return jsonify({
         "racer_id": racer.id,
         "first_name": racer.first_name,
-        "last_name": racer.last_name
-    })
+        "last_name": racer.last_name,
+        "bib_number": racer.bib_number
+    }), 200
 
 
 # ------------------------------------
@@ -188,7 +189,7 @@ def check_out():
             return jsonify({"error": "Racer is already out on a trail."}), 400
 
         # Fetch trail details for confirmation message
-        trail = Trail.query.filter_by(TrailID=trail_id).first()
+        trail = Trail.query.get(trail_id)
         if not trail:
             return jsonify({"error": "Trail not found."}), 404
 
@@ -213,8 +214,8 @@ def check_out():
 
         # Include trail name in response
         return jsonify({
-            "message": f"Racer checked out successfully on {trail.TrailName}.",
-            "trail_name": trail.TrailName
+            "message": f"Racer checked out successfully on {trail.name}.",
+            "trail_name": trail.name
         }), 201
 
     except Exception as e:
@@ -417,15 +418,21 @@ def add_bonus_objective():
 # RACERTRAILMAP ROUTES
 # ------------------------------------
 
-@routes.route("/racertrailmap/<int:racer_id>", methods=["GET"])
+@routes.route("/active-trail/<int:racer_id>", methods=["GET"])
 def get_active_trail(racer_id):
     entry = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
     if not entry:
         return jsonify({"message": "Racer is not currently on any trail"}), 404
+
+    trail = Trail.query.get(entry.trail_id)
+    if not trail:
+        return jsonify({"error": "Trail not found"}), 404
+
     return jsonify({
         "id": entry.id,
         "racer_id": entry.racer_id,
         "trail_id": entry.trail_id,
+        "trail_name": trail.name,  # ✅ Add this
         "start_time": entry.start_time
     })
 
@@ -486,19 +493,3 @@ def get_active_runners():
         print(f"Error fetching active runners: {e}")
         return jsonify({"error": "Failed to fetch active runners"}), 500
 
-@routes.route("/active-entries/<int:bib_number>", methods=["GET"])
-def get_active_entry(bib_number):
-    racer = Racer.query.filter_by(bib_number=bib_number).first()
-    if not racer:
-        return jsonify({"error": "Racer not found"}), 404
-
-    active_entry = RacerTrailMap.query.filter_by(racer_id=racer.id).first()
-    if not active_entry:
-        return jsonify({"error": "No active entry found"}), 404
-
-    trail = Trail.query.get(active_entry.trail_id)
-    return jsonify({
-        "trail_id": trail.id,
-        "trail_name": trail.name,
-        "start_time": active_entry.start_time
-    })
