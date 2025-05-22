@@ -63,7 +63,7 @@ export default function CheckInOut() {
         }
 
         try {
-            await axios.put("/raceentry/checkin", {
+            await axios.put(`/raceentry/checkin/${racer.id}`, {
                 racer_id: racer.id,
                 trail_id: trailID,
                 first_ten: firstTen,

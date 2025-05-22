@@ -234,16 +234,17 @@ def check_in(racer_id):
             return jsonify({"error": "No active trail found for this racer."}), 404
         
         # Get the associated trail directly from the active trail map
-        trail = Trail.query.filter_by(TrailID=active_trail_entry.trail_id).first()
+        trail = Trail.query.get(active_trail_entry.trail_id)
         if not trail:
             return jsonify({"error": "Associated trail not found."}), 404
         
         # Extract trail attributes
-        base_points = trail.BasePoints
-        distance = trail.Distance
-        elevation_gain = trail.ElevationGain
-        first_ten_points = trail.FirstTenPoints or 0
-        second_ten_points = trail.SecondTenPoints or 0
+        base_points = trail.base_points
+        distance = trail.distance
+        elevation_gain = trail.elevation_gain
+        first_ten_points = trail.first_ten_points or 0
+        second_ten_points = trail.second_ten_points or 0
+
         
         # Extract bonus type from the request
         bonus_type = request.json.get("bonus_type", None)  # "first_ten" or "second_ten"
@@ -259,7 +260,7 @@ def check_in(racer_id):
         points_earned = base_points + bonus_points
 
         # Update the active race entry
-        race_entry = RaceEntry.query.filter_by(racer_id=racer_id, trail_id=trail.TrailID, end_time=None).first()
+        race_entry = RaceEntry.query.filter_by(racer_id=racer_id, trail_id=trail.id, end_time=None).first()
         if not race_entry:
             return jsonify({"error": "No active race entry found for this racer."}), 404
         
@@ -282,7 +283,7 @@ def check_in(racer_id):
         db.session.commit()
 
         return jsonify({
-            "message": f"Racer checked in successfully from {trail.TrailName}.",
+            "message": f"Racer checked in successfully from {trail.name}.",
             "points_earned": points_earned,
             "total_miles": racer.total_miles,
             "total_elevation_gain": racer.total_elevation_gain,
