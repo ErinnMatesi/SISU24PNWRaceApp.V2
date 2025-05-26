@@ -23,6 +23,7 @@ export default function BonusPoints() {
     };
 
     const handleRacerFound = (foundRacer) => {
+        console.log("Found racer in BonusPoints:", foundRacer);
         setRacer(foundRacer);
         setMessage(""); // Clear any old messages
     };
@@ -35,7 +36,7 @@ export default function BonusPoints() {
 
         try {
             const response = await axios.post("/raceentry/bonuspoints", {
-                racer_id: racer.racer_id,
+                racer_id: racer.id,
                 bonus_objective_id: bonusObjectiveID,
             });
 
@@ -70,9 +71,10 @@ export default function BonusPoints() {
                     >
                         <option value="">Select Side Quest</option>
                         {bonusObjectives.map((objective) => (
-                            <option key={objective.ObjectiveID} value={objective.ObjectiveID}>
-                                {objective.Description}
+                            <option key={objective.id} value={objective.id}>
+                                {objective.description}
                             </option>
+
                         ))}
                     </select>
 

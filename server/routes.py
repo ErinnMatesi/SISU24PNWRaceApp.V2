@@ -253,8 +253,14 @@ def check_in(racer_id):
         # Apply the correct bonus based on the selected type
         if bonus_type == "first_ten":
             bonus_points = first_ten_points
+            if trail.first_ten_points and trail.first_ten_points > 0:
+                trail.first_ten_points -= 1
+
         elif bonus_type == "second_ten":
             bonus_points = second_ten_points
+            if trail.second_ten_points and trail.second_ten_points > 0:
+                trail.second_ten_points -= 1
+
 
         # Total points earned for this trail
         points_earned = base_points + bonus_points
@@ -316,25 +322,31 @@ def add_bonus_points():
             return jsonify({"error": "This racer has already completed this bonus objective."}), 400
 
         # Fetch the bonus objective to get points
-        bonus_objective = BonusObjective.query.filter_by(ObjectiveID=bonus_objective_id).first()
+        bonus_objective = BonusObjective.query.filter_by(id=bonus_objective_id).first()
         if not bonus_objective:
             return jsonify({"error": "Bonus Objective not found."}), 404
+        
+        # Fetch trail if associated
+        trail = None
+        if bonus_objective.associated_trail_id:
+            trail = Trail.query.get(bonus_objective.associated_trail_id)
 
         # Create a race entry for the bonus points
         new_entry = RaceEntry(
             racer_id=racer_id,
+            trail_id=trail.id if trail else None,
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow(),  # Bonus points are instant
-            points_earned=bonus_objective.BonusPoints,
-            bonus_objective_id=bonus_objective_id,
-            bonus_objective_description=bonus_objective.Description
+            points_earned=bonus_objective.bonus_points,
+            bonus_objective_id=bonus_objective.id,
+            bonus_objective_description=bonus_objective.description
         )
         db.session.add(new_entry)
 
         # Update racer totals
         racer = Racer.query.filter_by(id=racer_id).first()
         if racer:
-            racer.total_points += bonus_objective.BonusPoints
+            racer.total_points += bonus_objective.bonus_points
 
         # Commit changes
         db.session.commit()
@@ -494,3 +506,81 @@ def get_active_runners():
         print(f"Error fetching active runners: {e}")
         return jsonify({"error": "Failed to fetch active runners"}), 500
 
+@routes.route("/leaderboard/category/<category>", methods=["GET"])
+def get_leaderboard_by_category(category):
+    try:
+        query = Racer.query
+
+        if category == "male_24hr":
+            query = query.filter_by(gender="Male", division="24HR")
+            query = query.order_by(Racer.total_points.desc())
+        elif category == "female_24hr":
+            query = query.filter_by(gender="Female", division="24HR")
+            query = query.order_by(Racer.total_points.desc())
+        elif category == "teams_24hr":
+            query = query.filter(Racer.division == "24HR", Racer.team_id.isnot(None))
+            query = query.order_by(Racer.total_points.desc())
+        elif category == "100miler":
+            query = query.filter_by(division="100Miler")
+            # Not sorting unless needed
+        else:
+            return jsonify({"error": "Invalid category"}), 400
+
+        racers = query.all()
+
+        return jsonify([
+            {
+                "id": r.id,
+                "first_name": r.first_name,
+                "last_name": r.last_name,
+                "total_points": r.total_points,
+                "total_miles": r.total_miles,
+                "team_id": r.team_id
+            }
+            for r in racers
+        ]), 200
+
+    except Exception as e:
+        print(f"Error in leaderboard query: {e}")
+        return jsonify({"error": "Failed to fetch leaderboard data"}), 500
+
+@routes.route("/leaderboard/trails", methods=["GET"])
+def get_trail_leaderboard_data():
+    try:
+        # Get all trails
+        trails = Trail.query.all()
+        results = []
+
+        for trail in trails:
+            # Get all racers currently on this trail (from RacerTrailMap)
+            active_entries = (
+                db.session.query(RacerTrailMap, Racer)
+                .join(Racer, RacerTrailMap.racer_id == Racer.id)
+                .filter(RacerTrailMap.trail_id == trail.id)
+                .order_by(RacerTrailMap.start_time.asc())
+                .all()
+            )
+
+            # Format active racers
+            active_runners = [
+                {
+                    "racer_id": racer.id,
+                    "first_name": racer.first_name,
+                    "last_name": racer.last_name,
+                    "start_time": entry.start_time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                for entry, racer in active_entries
+            ]
+
+            results.append({
+                "trail_id": trail.id,
+                "first_ten_points": trail.first_ten_points,
+                "second_ten_points": trail.second_ten_points,
+                "active_runners": active_runners
+            })
+
+        return jsonify(results), 200
+
+    except Exception as e:
+        print("Error fetching trail leaderboard data:", e)
+        return jsonify({"error": "Failed to load trail leaderboard data"}), 500

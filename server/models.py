@@ -61,6 +61,7 @@ class RaceEntry(db.Model):
     end_time = db.Column("EndTime", db.DateTime, nullable=True)
     points_earned = db.Column("PointsEarned", db.Integer, default=0)
     bonus_objective_id = db.Column("BonusObjectiveID", db.Integer, db.ForeignKey("bonusobjectives.ObjectiveID"), nullable=True)
+    bonus_objective_description = db.Column("BonusObjectiveDescription", db.Text, nullable=True)
     distress_flag = db.Column("distress_flag", db.Boolean, default=False)
 
 # Teams Model

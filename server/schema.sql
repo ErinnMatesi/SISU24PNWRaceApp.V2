@@ -58,6 +58,7 @@ CREATE TABLE raceentries (
     EndTime DATETIME DEFAULT NULL,
     PointsEarned INT DEFAULT NULL,
     BonusObjectiveID INT DEFAULT NULL,
+    BonusObjectiveDescription TEXT NULL,
     distress_flag BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (RacerID) REFERENCES racers(RacerID),
     FOREIGN KEY (TrailID) REFERENCES trails(TrailID),
