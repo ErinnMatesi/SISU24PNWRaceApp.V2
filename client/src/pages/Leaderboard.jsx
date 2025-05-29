@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import './Leaderboard.css';
 
 const categories = [
   { key: "male_24hr", label: "Male 24HR" },
