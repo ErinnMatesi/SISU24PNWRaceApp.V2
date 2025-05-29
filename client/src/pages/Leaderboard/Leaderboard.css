@@ -1,0 +1,59 @@
+@font-face {
+  font-family: 'NESFont';
+  src: url('../../../public/assets/fonts/the-legend-of-zelda-nes.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'NESFont', sans-serif;
+}
+
+.leaderboard-container {
+  background-image: url('../../../public/assets/images/backgrounds/DayBkg.png'); /* default to day */
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  padding: 2rem;
+  color: #fff;
+}
+
+.section-header {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 1rem auto;
+  display: block;
+}
+
+.category-section,
+.trail-section {
+  margin-bottom: 2rem;
+}
+
+.category-boxes {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-box {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+  border-radius: 8px;
+  min-width: 200px;
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+.trail-box {
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.trail-content {
+  margin-top: 1rem;
+  text-align: center;
+}

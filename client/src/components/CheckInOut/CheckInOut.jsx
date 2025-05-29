@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BibNumberLookup from "./BibNumberLookup/BibNumberLookup";
+import BibNumberLookup from "../BibNumberLookup/BibNumberLookup.jsx";
 import './CheckInOut.css';
 
 export default function CheckInOut() {

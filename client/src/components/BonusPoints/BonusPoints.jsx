@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BibNumberLookup from "./BibNumberLookup/BibNumberLookup";
+import BibNumberLookup from "../BibNumberLookup/BibNumberLookup.jsx";
 import './BonusPoints.css';
 
 export default function BonusPoints() {

@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 import RegisterTeam from "./pages/RegisterTeam";
 import RegisterRacer from "./pages/RegisterRacer";
-import Dashboard from "./pages/Dashboard";
-import Leaderboard from "./pages/Leaderboard";
-import EditPanel from "./pages/EditPanel";
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import Leaderboard from "./pages/Leaderboard/Leaderboard.jsx";
+import EditPanel from "./pages/EditPanel/EditPanel.jsx";
 
 function App() {
   return (
