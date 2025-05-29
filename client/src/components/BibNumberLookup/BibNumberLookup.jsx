@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import './BibNumberLookup.css';
 
 export default function BibNumberLookup({ onRacerFound }) {
     const [bibNumber, setBibNumber] = useState("");

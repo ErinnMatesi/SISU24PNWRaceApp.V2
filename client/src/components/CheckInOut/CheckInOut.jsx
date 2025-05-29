@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BibNumberLookup from "./BibNumberLookup";
+import BibNumberLookup from "./BibNumberLookup/BibNumberLookup";
+import './CheckInOut.css';
 
 export default function CheckInOut() {
     const [racer, setRacer] = useState(null);

@@ -1,7 +1,8 @@
 import React from "react";
 // import ActiveRunners from "../components/ActiveRunners";
-import CheckInOut from "../components/CheckInOut";
-import BonusPoints from "../components/BonusPoints";
+import CheckInOut from "../../components/CheckInOut";
+import BonusPoints from "../../components/BonusPoints";
+import './Dashboard.css';
 
 export default function Dashboard() {
     return (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BibNumberLookup from "./BibNumberLookup";
+import BibNumberLookup from "./BibNumberLookup/BibNumberLookup";
+import './BonusPoints.css';
 
 export default function BonusPoints() {
     const [racer, setRacer] = useState(null);

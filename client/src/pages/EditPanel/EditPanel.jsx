@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import PasswordGate from "../components/PasswordGate";
+import PasswordGate from "../../components/PasswordGate";
+import './EditPanel.css';
 
 const EditPanel = () => {
   const [activeTab, setActiveTab] = useState("racers");
