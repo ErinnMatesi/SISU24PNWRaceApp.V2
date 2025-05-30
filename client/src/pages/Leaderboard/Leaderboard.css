@@ -27,6 +27,10 @@ body {
 
 .category-section,
 .trail-section {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  justify-content: space-around;
   margin-bottom: 2rem;
 }
 
@@ -46,9 +50,13 @@ body {
   font-size: 1.25rem;
 }
 
+.category-header {
+  background-image: url('../../../public/assets/images/headers/LeaderHeader.png');
+}
+
 .trail-box {
-  background-color: rgba(255, 255, 255, 0.1);
-  margin-bottom: 2rem;
+  background-color: rgba(5, 5, 5, 0.5);
+  margin: 1rem;
   padding: 1rem;
   border-radius: 8px;
 }

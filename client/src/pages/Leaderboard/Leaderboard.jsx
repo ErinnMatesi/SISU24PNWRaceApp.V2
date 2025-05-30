@@ -10,13 +10,13 @@ const categories = [
 ];
 
 const trailInfo = {
-  1: { name: "Snoquera Falls", header: "../../public/assets/images/headers/SnoqueraHeader.png", distance: 3.75, elevation: 802, redFlag: 161 },
-  2: { name: "Noble Knob", header: "../../public/assets/images/headers/NobleHeader.png", distance: 18.91, elevation: 4087, redFlag: 465 },
-  3: { name: "Little Ranger Peak", header: "../../public/assets/images/headers/LRPHeader.png", distance: 12.65, elevation: 2872, redFlag: 402 },
-  4: { name: "Dalles Falls", header: "../../public/assets/images/headers/DallesHeader.png", distance: 3.25, elevation: 480, redFlag: 120 },
-  5: { name: "Little Ranger Lookout", header: "../../public/assets/images/headers/LRLHeader.png", distance: 9.10, elevation: 1618, redFlag: 295 },
-  6: { name: "Goat Falls", header: "../../public/assets/images/headers/GoatHeader.png", distance: 9.85, elevation: 1298, redFlag: 285 },
-  7: { name: "SISU Service", header: "../../public/assets/images/headers/LeaderHeader.png", distance: 0.00, elevation: 0, redFlag: 60 }
+  1: { name: "Snoquera Falls", header: "/assets/images/headers/SnoqueraHeader.png", distance: 3.75, elevation: 802, redFlag: 161 },
+  2: { name: "Noble Knob", header: "/assets/images/headers/NobleHeader.png", distance: 18.91, elevation: 4087, redFlag: 465 },
+  3: { name: "Little Ranger Peak", header: "/assets/images/headers/LRPHeader.png", distance: 12.65, elevation: 2872, redFlag: 402 },
+  4: { name: "Dalles Falls", header: "/assets/images/headers/DallesHeader.png", distance: 3.25, elevation: 480, redFlag: 120 },
+  5: { name: "Little Ranger Lookout", header: "/assets/images/headers/LRLHeader.png", distance: 9.10, elevation: 1618, redFlag: 295 },
+  6: { name: "Goat Falls", header: "/assets/images/headers/GoatHeader.png", distance: 9.85, elevation: 1298, redFlag: 285 },
+  7: { name: "SISU Service", header: "/assets/images/headers/LeaderHeader.png", distance: 0.00, elevation: 0, redFlag: 60 }
 };
 
 const Leaderboard = () => {
@@ -55,7 +55,7 @@ const Leaderboard = () => {
 
   const renderCategoryBox = (key, label) => (
     <div key={key} className="category-box">
-      <h2>{label}</h2>
+      <h2 className="category-header">{label}</h2>
       <ul>
         {(categoryData[key] || []).map((racer, index) => (
           <li key={racer.id}>
@@ -71,43 +71,42 @@ const Leaderboard = () => {
     const now = new Date();
 
     return (
-      <div key={trail.trail_id} className="trail-box">
-        <div
-          className="trail-header"
-          style={{ backgroundImage: `url(${info.header})` }}
-        >
-          <h2>{info.name}</h2>
-          <p>{info.distance} mi • {info.elevation} ft</p>
-        </div>
-        <div className="trail-content">
-          <p>
-            Gold Remaining: {trail.first_ten_points} | Silver Remaining: {trail.second_ten_points}
-          </p>
-          <ul>
-            {(trail.active_runners || []).map((runner) => {
-              const startTime = new Date(runner.start_time);
-              const minsOut = Math.floor((now - startTime) / 60000);
-              const isOverTime = minsOut > (info.redFlag || 90);
+        <div key={trail.trail_id} className="trail-box">
+          <div
+            className="trail-header"
+            style={{ backgroundImage: `url(${info.header})` }}
+          >
+            <h2>{info.name}</h2>
+            <p>{info.distance} mi • {info.elevation} ft</p>
+          </div>
+          <div className="trail-content">
+            <p>
+              Gold Remaining: {trail.first_ten_points} | Silver Remaining: {trail.second_ten_points}
+            </p>
+            <ul>
+              {(trail.active_runners || []).map((runner) => {
+                const startTime = new Date(runner.start_time);
+                const minsOut = Math.floor((now - startTime) / 60000);
+                const isOverTime = minsOut > (info.redFlag || 90);
 
-              return (
-                <li
-                  key={runner.racer_id}
-                  className={isOverTime ? "overtime" : ""}
-                >
-                  {runner.first_name} {runner.last_name} — Out {minsOut} min
-                </li>
-              );
-            })}
-          </ul>
+                return (
+                  <li
+                    key={runner.racer_id}
+                    className={isOverTime ? "overtime" : ""}
+                  >
+                    {runner.first_name} {runner.last_name} — Out {minsOut} min
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
-      </div>
     );
   };
 
   return (
     <div className={`leaderboard-container ${bgClass}`}>
       <div className="category-section">
-        <img src="/images/leaderboard/header-categories.png" alt="Category Header" className="section-header" />
         <div className="category-boxes">
           {categories.map(({ key, label }) => renderCategoryBox(key, label))}
         </div>
