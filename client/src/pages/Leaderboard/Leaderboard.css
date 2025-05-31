@@ -46,7 +46,7 @@ body {
   padding: 1rem;
   border-radius: 8px;
   min-width: 200px;
-  text-align: center;
+  text-align: left;
   font-size: 1.25rem;
 }
 
@@ -63,5 +63,5 @@ body {
 
 .trail-content {
   margin-top: 1rem;
-  text-align: center;
+  text-align: left;
 }

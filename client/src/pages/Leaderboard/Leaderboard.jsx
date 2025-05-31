@@ -57,9 +57,14 @@ const Leaderboard = () => {
     <div key={key} className="category-box">
       <h2 className="category-header">{label}</h2>
       <ul>
-        {(categoryData[key] || []).map((racer, index) => (
-          <li key={racer.id}>
-            {index + 1}. {racer.first_name} {racer.last_name} — {racer.total_points} pts
+        {(categoryData[key] || []).map((entry, index) => (
+          <li key={`${key}-${entry.id}`}>
+            {index + 1}.{" "}
+            {key === "teams_24hr"
+              ? `${entry.team_name} — ${entry.total_points} pts`
+              : key === "100miler"
+              ? `${entry.first_name} ${entry.last_name} — ${entry.total_miles} mi`
+              : `${entry.first_name} ${entry.last_name} — ${entry.total_points} pts`}
           </li>
         ))}
       </ul>

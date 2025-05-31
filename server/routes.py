@@ -227,65 +227,56 @@ def check_out():
 @routes.route("/raceentry/checkin/<int:racer_id>", methods=["PUT"])
 def check_in(racer_id):
     try:
-        # Check for active trail map entry
         active_trail_entry = RacerTrailMap.query.filter_by(racer_id=racer_id).first()
-        
         if not active_trail_entry:
             return jsonify({"error": "No active trail found for this racer."}), 404
-        
-        # Get the associated trail directly from the active trail map
+
         trail = Trail.query.get(active_trail_entry.trail_id)
         if not trail:
             return jsonify({"error": "Associated trail not found."}), 404
-        
-        # Extract trail attributes
+
         base_points = trail.base_points
         distance = trail.distance
         elevation_gain = trail.elevation_gain
         first_ten_points = trail.first_ten_points or 0
         second_ten_points = trail.second_ten_points or 0
 
-        
-        # Extract bonus type from the request
-        bonus_type = request.json.get("bonus_type", None)  # "first_ten" or "second_ten"
+        bonus_type = request.json.get("bonus_type", None)
         bonus_points = 0
 
-        # Apply the correct bonus based on the selected type
         if bonus_type == "first_ten":
             bonus_points = first_ten_points
             if trail.first_ten_points and trail.first_ten_points > 0:
                 trail.first_ten_points -= 1
-
         elif bonus_type == "second_ten":
             bonus_points = second_ten_points
             if trail.second_ten_points and trail.second_ten_points > 0:
                 trail.second_ten_points -= 1
 
-
-        # Total points earned for this trail
         points_earned = base_points + bonus_points
 
-        # Update the active race entry
         race_entry = RaceEntry.query.filter_by(racer_id=racer_id, trail_id=trail.id, end_time=None).first()
         if not race_entry:
             return jsonify({"error": "No active race entry found for this racer."}), 404
-        
+
         race_entry.end_time = datetime.utcnow()
         race_entry.points_earned = points_earned
-        
-        # Update the racer's cumulative stats
+
         racer = Racer.query.get(racer_id)
         if not racer:
             return jsonify({"error": "Racer not found."}), 404
-        
+
         racer.total_points += points_earned
         racer.total_miles += distance
         racer.total_elevation_gain += elevation_gain
 
-        # Clean up active trail entry
-        db.session.delete(active_trail_entry)
+        # TEAM POINTS UPDATE
+        if racer.team_id:
+            team = Team.query.get(racer.team_id)
+            if team:
+                team.total_points = (team.total_points or 0) + points_earned
 
-        # Commit all changes
+        db.session.delete(active_trail_entry)
         db.session.commit()
 
         return jsonify({
@@ -300,7 +291,6 @@ def check_in(racer_id):
         db.session.rollback()
         print(e)
         return jsonify({"error": "Failed to check in racer."}), 500
-
 
 @routes.route("/raceentry/bonuspoints", methods=["POST"])
 def add_bonus_points():
@@ -509,36 +499,48 @@ def get_active_runners():
 @routes.route("/leaderboard/category/<category>", methods=["GET"])
 def get_leaderboard_by_category(category):
     try:
-        query = Racer.query
-
         if category == "male_24hr":
-            query = query.filter_by(gender="Male", division="24HR")
-            query = query.order_by(Racer.total_points.desc())
-        elif category == "female_24hr":
-            query = query.filter_by(gender="Female", division="24HR")
-            query = query.order_by(Racer.total_points.desc())
-        elif category == "teams_24hr":
-            query = query.filter(Racer.division == "24HR", Racer.team_id.isnot(None))
-            query = query.order_by(Racer.total_points.desc())
-        elif category == "100miler":
-            query = query.filter_by(division="100Miler")
-            # Not sorting unless needed
-        else:
-            return jsonify({"error": "Invalid category"}), 400
-
-        racers = query.all()
-
-        return jsonify([
-            {
+            racers = Racer.query.filter_by(gender="Male", division="24hr individual").order_by(Racer.total_points.desc()).all()
+            return jsonify([{
                 "id": r.id,
                 "first_name": r.first_name,
                 "last_name": r.last_name,
                 "total_points": r.total_points,
                 "total_miles": r.total_miles,
                 "team_id": r.team_id
-            }
-            for r in racers
-        ]), 200
+            } for r in racers]), 200
+
+        elif category == "female_24hr":
+            racers = Racer.query.filter_by(gender="Female", division="24hr individual").order_by(Racer.total_points.desc()).all()
+            return jsonify([{
+                "id": r.id,
+                "first_name": r.first_name,
+                "last_name": r.last_name,
+                "total_points": r.total_points,
+                "total_miles": r.total_miles,
+                "team_id": r.team_id
+            } for r in racers]), 200
+
+        elif category == "teams_24hr":
+            teams = Team.query.order_by(Team.total_points.desc()).all()
+            return jsonify([{
+                "id": t.id,
+                "team_name": t.team_name,
+                "total_points": t.total_points
+            } for t in teams]), 200
+
+        elif category == "100miler":
+            racers = Racer.query.filter_by(division="100 milers").order_by(Racer.total_miles.desc()).all()
+            return jsonify([{
+                "id": r.id,
+                "first_name": r.first_name,
+                "last_name": r.last_name,
+                "total_points": r.total_points,
+                "total_miles": r.total_miles,
+                "team_id": r.team_id
+            } for r in racers]), 200
+
+        return jsonify({"error": "Invalid category"}), 400
 
     except Exception as e:
         print(f"Error in leaderboard query: {e}")
