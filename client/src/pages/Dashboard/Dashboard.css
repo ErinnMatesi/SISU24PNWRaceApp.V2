@@ -1,0 +1,12 @@
+.title {
+  text-align: center;
+}
+
+.dashboard-boxes {
+  display: flex;
+  flex-direction: row;
+  /* height: 30%; */
+  width: 100%;
+  justify-content: space-evenly;
+  margin-bottom: 1rem;
+}

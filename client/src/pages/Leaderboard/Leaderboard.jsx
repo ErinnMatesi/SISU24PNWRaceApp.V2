@@ -22,19 +22,11 @@ const trailInfo = {
 const Leaderboard = () => {
   const [categoryData, setCategoryData] = useState({});
   const [trailData, setTrailData] = useState([]);
-  const [bgClass, setBgClass] = useState("day");
 
   useEffect(() => {
     fetchAllData();
     const interval = setInterval(fetchAllData, 30000); // Refresh every 30 sec
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour < 17) setBgClass("day");
-    else if (hour >= 17 && hour < 21) setBgClass("evening");
-    else setBgClass("night");
   }, []);
 
   const fetchAllData = async () => {
@@ -55,16 +47,19 @@ const Leaderboard = () => {
 
   const renderCategoryBox = (key, label) => (
     <div key={key} className="category-box">
-      <h2 className="category-header">{label}</h2>
-      <ul>
+      <div className="category-header-image">
+        <h2 className="category-header">{label}</h2>
+      </div>
+      
+      <ul className="category-list">
         {(categoryData[key] || []).map((entry, index) => (
           <li key={`${key}-${entry.id}`}>
             {index + 1}.{" "}
             {key === "teams_24hr"
-              ? `${entry.team_name} — ${entry.total_points} pts`
+              ? `${entry.team_name}: ${entry.total_points} `
               : key === "100miler"
-              ? `${entry.first_name} ${entry.last_name} — ${entry.total_miles} mi`
-              : `${entry.first_name} ${entry.last_name} — ${entry.total_points} pts`}
+              ? `${entry.first_name} ${entry.last_name}: ${entry.total_miles}`
+              : `${entry.first_name} ${entry.last_name}: ${entry.total_points}`}
           </li>
         ))}
       </ul>
@@ -110,7 +105,7 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className={`leaderboard-container ${bgClass}`}>
+    <div>
       <div className="category-section">
         <div className="category-boxes">
           {categories.map(({ key, label }) => renderCategoryBox(key, label))}

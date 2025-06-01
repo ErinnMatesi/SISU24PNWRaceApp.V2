@@ -1,0 +1,28 @@
+.bonus-container{
+  max-width: 40%;
+}
+
+.bonus-header {
+
+}
+
+.submit-button {
+  background-color: #007bff; /* Bright blue */
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover{
+  background-color: #0056b3;
+}
+
+.message {
+  text-wrap: wrap;
+}

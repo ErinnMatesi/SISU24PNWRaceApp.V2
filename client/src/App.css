@@ -1,38 +1,83 @@
-.App {
-  text-align: center;
+/* === CSS Reset === */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+    width: 100%;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+ul, ol {
+  list-style: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, textarea, select {
+  font: inherit;
+  border: none;
+  outline: none;
+}
+
+.app-container {
+  height: 100vh;
+  background-size: contain;
+  background-position: center top;
+  color: #fff;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.app-container.day {
+  background-image: url('../public/assets/images/backgrounds/DayBkg.png');
+}
+
+.app-container.evening {
+  background-image: url('../public/assets/images/backgrounds/SunsetBkg.png');
+}
+
+.app-container.night {
+  background-image: url('../public/assets/images/backgrounds/NightBkg.png');
+}
+
+
+/* NAV */
+nav {
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 20px;
+}
+
+nav ul li a {
   color: white;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+nav ul li a:hover {
+  color: #ccc;
 }

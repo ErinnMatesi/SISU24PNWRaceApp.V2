@@ -56,8 +56,8 @@ export default function BonusPoints() {
     };
 
     return (
-        <div className="p-4 mb-4 border rounded">
-            <h2 className="text-xl font-semibold mb-4">Bonus Points</h2>
+        <div className="bonus-container">
+            <h2 className="bonus-header">Side Quests</h2>
 
             {/* Bib Number Lookup */}
             <BibNumberLookup onRacerFound={handleRacerFound} />
@@ -81,15 +81,15 @@ export default function BonusPoints() {
 
                     <button
                         onClick={handleSubmit}
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                        className="submit-button"
                     >
-                        Submit Side Quest Points
+                        Submit Points
                     </button>
                 </>
             )}
 
             {/* Status Message */}
-            {message && <p className="mt-4 text-green-600">{message}</p>}
+            {message && <p className="message">{message}</p>}
         </div>
     );
 }

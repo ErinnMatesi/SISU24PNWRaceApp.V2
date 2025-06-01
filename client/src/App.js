@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import './App.css';
 
 import RegisterTeam from "./pages/RegisterTeam";
 import RegisterRacer from "./pages/RegisterRacer";
@@ -8,23 +9,42 @@ import Leaderboard from "./pages/Leaderboard/Leaderboard.jsx";
 import EditPanel from "./pages/EditPanel/EditPanel.jsx";
 
 function App() {
+  const [bgClass, setBgClass] = useState("day");
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+
+    if ((hour >= 4 && hour < 6) || (hour >= 18 && hour < 21)) {
+      setBgClass("evening");
+    } else if (hour >= 6 && hour < 18) {
+      setBgClass("day");
+    } else {
+      setBgClass("night");
+    }
+  }, []);
+
   return (
-    <Router>
-      <nav className="p-4 bg-gray-100 flex gap-4">
-        <Link to="/">Dashboard</Link>
-        <Link to="/register-team">Register Team</Link>
-        <Link to="/register-racer">Register Racer</Link>
-        <Link to="/leaderboard">Leaderboard</Link>
-        <Link to="/edit">Admin Edit</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/register-team" element={<RegisterTeam />} />
-        <Route path="/register-racer" element={<RegisterRacer />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/edit" element={<EditPanel />} />
-      </Routes>
-    </Router>
+    <div className={`app-container ${bgClass}`}>
+      <Router>
+        <nav>
+          <ul>
+            <li><Link to="/">Dashboard</Link></li>
+            <li><Link to="/leaderboard">Leaderboard</Link></li>
+            <li><Link to="/register-team">Register Team</Link></li>
+            <li><Link to="/register-racer">Register Racer</Link></li>
+            <li><Link to="/edit">Admin Edit</Link></li>
+          </ul>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/register-team" element={<RegisterTeam />} />
+          <Route path="/register-racer" element={<RegisterRacer />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/edit" element={<EditPanel />} />
+        </Routes>
+      </Router>
+    </div>
+    
   );
 }
 

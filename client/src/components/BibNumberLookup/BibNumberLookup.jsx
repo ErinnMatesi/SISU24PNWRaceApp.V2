@@ -53,15 +53,15 @@ export default function BibNumberLookup({ onRacerFound }) {
     };
 
     return (
-        <div className="mb-4">
+        <div className="bibnumber-container">
             <input
-                placeholder="Bib Number"
+                placeholder="Type Bib Number Here"
                 value={bibNumber}
                 onChange={(e) => setBibNumber(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="border rounded w-full p-2 mb-2"
+                className="input"
             />
-            {message && <p className="text-sm text-gray-600">{message}</p>}
+            {message && <p className="message">{message}</p>}
         </div>
     );
 }

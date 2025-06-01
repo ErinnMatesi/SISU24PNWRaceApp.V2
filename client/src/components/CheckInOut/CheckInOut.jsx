@@ -82,8 +82,8 @@ export default function CheckInOut() {
     };
 
     return (
-        <div className="p-4 mb-4 border rounded">
-            <h2 className="text-xl font-semibold mb-4">Check In / Out</h2>
+        <div className="checkinout-container">
+            <h2 className="checkinout-header">Check In / Out</h2>
             <BibNumberLookup onRacerFound={handleRacerFound} />
 
             {/* Check Out Form */}
@@ -92,14 +92,20 @@ export default function CheckInOut() {
                     <select
                         value={trailID}
                         onChange={(e) => setTrailID(e.target.value)}
-                        className="border rounded w-full p-2 mb-4"
+                        className="trail-select"
                     >
                         <option value="">Select Trail</option>
                         {trails.map((trail) => (
-                            <option key={trail.id} value={trail.id}>{trail.name}</option>
+                        <option
+                            key={trail.id}
+                            value={trail.id}
+                            style={{ backgroundColor: trail.color || "white", color: "black" }}
+                        >
+                            {trail.name}
+                        </option>
                         ))}
                     </select>
-                    <button onClick={handleCheckOut} className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                    <button onClick={handleCheckOut} className="checkout-button">
                         Check Out On Trail
                     </button>
                 </>
@@ -108,8 +114,8 @@ export default function CheckInOut() {
             {/* Check In Form */}
             {isCheckingIn && racer && (
                 <>
-                    <div className="mb-4">
-                        <label className="block mb-2 font-semibold">Gold Bonus</label>
+                    <div className="bonus-select">
+                        <label className="gold-bonus">Gold Bonus</label>
                         <input
                             type="checkbox"
                             checked={firstTen}
@@ -117,13 +123,12 @@ export default function CheckInOut() {
                                 setFirstTen(e.target.checked);
                                 if (e.target.checked) setSecondTen(false);
                             }}
-                            className="mr-2"
+                            className="checkbox"
                         />
-                        <span>Add Gold Points</span>
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block mb-2 font-semibold">Silver Bonus</label>
+                    <div className="bonus-select">
+                        <label className="silver-bonus">Silver Bonus</label>
                         <input
                             type="checkbox"
                             checked={secondTen}
@@ -131,18 +136,17 @@ export default function CheckInOut() {
                                 setSecondTen(e.target.checked);
                                 if (e.target.checked) setFirstTen(false);
                             }}
-                            className="mr-2"
+                            className="checkbox"
                         />
-                        <span>Add Silver Points</span>
                     </div>
 
-                    <button onClick={handleCheckIn} className="bg-green-500 text-white px-4 py-2 rounded w-full">
+                    <button onClick={handleCheckIn} className="checkin-button">
                         Check In From Trail
                     </button>
                 </>
             )}
 
-            {message && <p className="mt-4 text-gray-600">{message}</p>}
+            {message && <p className="message">{message}</p>}
         </div>
     );
 }

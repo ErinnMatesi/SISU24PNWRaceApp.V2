@@ -1,0 +1,50 @@
+.checkinout-container {
+  max-width: 40%
+}
+
+.checkinout-header {
+
+}
+
+.trail-select {
+
+}
+
+.checkout-button,
+.checkin-button {
+  background-color: #007bff; /* Bright blue */
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover,
+.checkin-button:hover {
+  background-color: #0056b3;
+}
+
+.bonus-select {
+
+}
+
+.gold-bonus {
+  background-color: darkgoldenrod;
+}
+
+.silver-bonus {
+  background-color: silver;
+}
+
+.checkbox {
+
+}
+
+.message {
+  text-wrap: wrap;
+}

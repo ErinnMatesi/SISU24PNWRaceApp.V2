@@ -6,10 +6,10 @@ import './Dashboard.css';
 
 export default function Dashboard() {
     return (
-        <div className="p-8">
-            <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+        <div className="dashboard">
+            <h1 className="title">Dashboard</h1>
             {/* <ActiveRunners /> */}
-            <div className="mt-8">
+            <div className="dashboard-boxes">
                 <CheckInOut />
                 <BonusPoints />
             </div>
