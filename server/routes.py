@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Racer, Trail, RaceEntry, Team, BonusObjective, RacerTrailMap
-from datetime import datetime
+from datetime import datetime, timezone
 
 routes = Blueprint("routes", __name__)
 
@@ -154,7 +154,6 @@ def get_all_race_entries():
         "start_time": re.start_time,
         "end_time": re.end_time,
         "points_earned": re.points_earned,
-        "bonus_points_earned": re.bonus_points_earned,
         "bonus_objective_id": re.bonus_objective_id
     } for re in race_entries])
 
@@ -168,7 +167,6 @@ def get_race_entry(id):
         "start_time": entry.start_time,
         "end_time": entry.end_time,
         "points_earned": entry.points_earned,
-        "bonus_points_earned": entry.bonus_points_earned,
         "bonus_objective_id": entry.bonus_objective_id
     })
 
@@ -197,7 +195,7 @@ def check_out():
         new_entry = RaceEntry(
             racer_id=racer_id,
             trail_id=trail_id,
-            start_time=datetime.utcnow()
+            start_time=datetime.now(timezone.utc)
         )
         db.session.add(new_entry)
 
@@ -205,7 +203,7 @@ def check_out():
         new_map_entry = RacerTrailMap(
             racer_id=racer_id,
             trail_id=trail_id,
-            start_time=datetime.utcnow()
+            start_time=datetime.now(timezone.utc)
         )
         db.session.add(new_map_entry)
 
@@ -259,7 +257,7 @@ def check_in(racer_id):
         if not race_entry:
             return jsonify({"error": "No active race entry found for this racer."}), 404
 
-        race_entry.end_time = datetime.utcnow()
+        race_entry.end_time = datetime.now(timezone.utc)
         race_entry.points_earned = points_earned
 
         racer = Racer.query.get(racer_id)
@@ -325,8 +323,8 @@ def add_bonus_points():
         new_entry = RaceEntry(
             racer_id=racer_id,
             trail_id=trail.id if trail else None,
-            start_time=datetime.utcnow(),
-            end_time=datetime.utcnow(),  # Bonus points are instant
+            start_time=datetime.now(timezone.utc),
+            end_time=datetime.now(timezone.utc),  # Bonus points are instant
             points_earned=bonus_objective.bonus_points,
             bonus_objective_id=bonus_objective.id,
             bonus_objective_description=bonus_objective.description
@@ -485,7 +483,7 @@ def get_active_runners():
                 "racer_id": runner.RacerID,
                 "first_name": runner.FirstName,
                 "last_name": runner.LastName,
-                "start_time": runner.StartTime.strftime("%Y-%m-%d %H:%M:%S")
+                "start_time": runner.StartTime.starttime("%Y-%m-%d %H:%M:%S")
             }
             for runner in active_runners
         ]
@@ -569,7 +567,7 @@ def get_trail_leaderboard_data():
                     "racer_id": racer.id,
                     "first_name": racer.first_name,
                     "last_name": racer.last_name,
-                    "start_time": entry.start_time.strftime("%Y-%m-%d %H:%M:%S")
+                    "start_time": entry.start_time.starttime("%Y-%m-%d %H:%M:%S")
                 }
                 for entry, racer in active_entries
             ]

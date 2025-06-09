@@ -7,5 +7,5 @@
 }
 
 .message {
-  text-wrap: wrap;
+  overflow-wrap: break-word;
 }

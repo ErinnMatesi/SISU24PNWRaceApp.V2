@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -48,7 +48,9 @@ class RacerTrailMap(db.Model):
     id = db.Column("ID", db.Integer, primary_key=True, autoincrement=True)
     racer_id = db.Column("RacerID", db.Integer, db.ForeignKey("racers.RacerID"), unique=True, nullable=False)
     trail_id = db.Column("TrailID", db.Integer, db.ForeignKey("trails.TrailID"), nullable=False)
-    start_time = db.Column("StartTime", db.DateTime, default=datetime.utcnow)
+    start_time = db.Column(
+        "StartTime", db.DateTime, default=lambda: datetime.now(timezone.utc)
+    )
 
 # Race Entries Model (Tracks Check-ins/Check-outs)
 class RaceEntry(db.Model):
@@ -57,7 +59,9 @@ class RaceEntry(db.Model):
     id = db.Column("EntryID", db.Integer, primary_key=True, autoincrement=True)
     racer_id = db.Column("RacerID", db.Integer, db.ForeignKey("racers.RacerID"), nullable=False)
     trail_id = db.Column("TrailID", db.Integer, db.ForeignKey("trails.TrailID"), nullable=True)
-    start_time = db.Column("StartTime", db.DateTime, default=datetime.utcnow)
+    start_time = db.Column(
+        "StartTime", db.DateTime, default=lambda: datetime.now(timezone.utc)
+    )
     end_time = db.Column("EndTime", db.DateTime, nullable=True)
     points_earned = db.Column("PointsEarned", db.Integer, default=0)
     bonus_objective_id = db.Column("BonusObjectiveID", db.Integer, db.ForeignKey("bonusobjectives.ObjectiveID"), nullable=True)

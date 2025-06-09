@@ -64,12 +64,18 @@ export default function CheckInOut() {
         }
 
         try {
-            await axios.put(`/raceentry/checkin/${racer.id}`, {
+            const payload = {
                 racer_id: racer.id,
                 trail_id: trailID,
-                first_ten: firstTen,
-                second_ten: secondTen,
-            });
+            };
+            
+            if (firstTen) {
+                payload.bonus_type = "first_ten";
+            } else if (secondTen) {
+                payload.bonus_type = "second_ten";
+            }
+
+            await axios.put(`/raceentry/checkin/${racer.id}`, payload);
             setMessage(`✅ ${racer.first_name} checked in successfully!`);
             setRacer(null);
             setTrailID("");
