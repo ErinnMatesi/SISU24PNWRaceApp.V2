@@ -14,9 +14,9 @@ function App() {
   useEffect(() => {
     const hour = new Date().getHours();
 
-    if ((hour >= 4 && hour < 6) || (hour >= 18 && hour < 21)) {
+    if ((hour >= 4 && hour < 6) || (hour >= 20 && hour < 22)) {
       setBgClass("evening");
-    } else if (hour >= 6 && hour < 18) {
+    } else if (hour >= 6 && hour < 20) {
       setBgClass("day");
     } else {
       setBgClass("night");

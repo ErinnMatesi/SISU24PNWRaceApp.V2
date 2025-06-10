@@ -25,15 +25,6 @@ body {
   margin-bottom: 1rem;
 }
 
-.trail-section {
-  display: flex;
-  flex-direction: row;
-  height: 60%;
-  width: 100%;
-  justify-content: space-around;
-  margin-bottom: 1rem;
-}
-
 .category-boxes {
   display: flex;
   gap: 1rem;
@@ -67,6 +58,30 @@ ul {
     padding-inline-start: 5px;
 }
 
+.trail-section {
+  display: flex;
+  flex-direction: row;
+  height: 60%;
+  width: 100%;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.trail-header {
+  text-align: center;
+}
+
+.trail-name {
+  font-size: 1rem;
+  padding-top: 15px;
+  margin: 0;
+}
+
+.trail-stats {
+  font-size: .75rem;
+  margin: 0;
+}
+
 .trail-box {
   background-color: rgba(5, 5, 5, 0.5);
   margin: .5rem;
@@ -78,4 +93,12 @@ ul {
 .trail-content {
   margin-top: 1rem;
   text-align: left;
+}
+
+.bonus-remainders {
+  font-size: .75rem;
+}
+
+.racer-list {
+  font-size: .5rem;
 }

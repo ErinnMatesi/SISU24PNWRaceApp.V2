@@ -76,14 +76,14 @@ const Leaderboard = () => {
             className="trail-header"
             style={{ backgroundImage: `url(${info.header})` }}
           >
-            <h2>{info.name}</h2>
-            <p>{info.distance} mi • {info.elevation} ft</p>
+            <h2 className="trail-name">{info.name}</h2>
+            <p className="trail-stats">{info.distance} mi <br></br> {info.elevation} ft</p>
           </div>
           <div className="trail-content">
-            <p>
-              Gold Remaining: {trail.first_ten_points} | Silver Remaining: {trail.second_ten_points}
+            <p className="bonus-remainders">
+              Gold Remaining: {trail.first_ten_points} <br></br> Silver Remaining: {trail.second_ten_points}
             </p>
-            <ul>
+            <ul className="racer-list">
               {(trail.active_runners || []).map((runner) => {
                 const startTime = new Date(runner.start_time);
                 const minsOut = Math.floor((now - startTime) / 60000);
@@ -94,8 +94,8 @@ const Leaderboard = () => {
                     key={runner.racer_id}
                     className={isOverTime ? "overtime" : ""}
                   >
-                    {runner.first_name} {runner.last_name} — Out {minsOut} min
-                    {isOverTime && " 🚩 Overtime"}
+                    {runner.first_name} {runner.last_name} — {minsOut} min
+                    {isOverTime && " 🚩 "}
                   </li>
                 );
               })}

@@ -577,7 +577,7 @@ def get_trail_leaderboard_data():
                     "racer_id": racer.id,
                     "first_name": racer.first_name,
                     "last_name": racer.last_name,
-                    "start_time": to_iso_z(entry.StartTime)
+                    "start_time": to_iso_z(entry.start_time)
                 }
                 for entry, racer in active_entries
             ]
