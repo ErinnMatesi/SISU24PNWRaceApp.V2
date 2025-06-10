@@ -95,6 +95,7 @@ const Leaderboard = () => {
                     className={isOverTime ? "overtime" : ""}
                   >
                     {runner.first_name} {runner.last_name} — Out {minsOut} min
+                    {isOverTime && " 🚩 Overtime"}
                   </li>
                 );
               })}

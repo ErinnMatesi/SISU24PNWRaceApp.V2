@@ -2,6 +2,16 @@ from flask import Blueprint, request, jsonify
 from models import db, Racer, Trail, RaceEntry, Team, BonusObjective, RacerTrailMap
 from datetime import datetime, timezone
 
+def to_iso_z(dt):
+    """Return an ISO 8601 string with UTC designator."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return dt.isoformat().replace("+00:00", "Z")
+
 routes = Blueprint("routes", __name__)
 
 # ------------------------------------
@@ -151,7 +161,7 @@ def get_all_race_entries():
         "id": re.id,
         "racer_id": re.racer_id,
         "trail_id": re.trail_id,
-        "start_time": re.start_time,
+        "start_time": to_iso_z(re.start_time),
         "end_time": re.end_time,
         "points_earned": re.points_earned,
         "bonus_objective_id": re.bonus_objective_id
@@ -164,7 +174,7 @@ def get_race_entry(id):
         "id": entry.id,
         "racer_id": entry.racer_id,
         "trail_id": entry.trail_id,
-        "start_time": entry.start_time,
+        "start_time": to_iso_z(entry.start_time),
         "end_time": entry.end_time,
         "points_earned": entry.points_earned,
         "bonus_objective_id": entry.bonus_objective_id
@@ -433,8 +443,8 @@ def get_active_trail(racer_id):
         "id": entry.id,
         "racer_id": entry.racer_id,
         "trail_id": entry.trail_id,
-        "trail_name": trail.name,  # ✅ Add this
-        "start_time": entry.start_time
+        "trail_name": trail.name,
+        "start_time": to_iso_z(entry.start_time)
     })
 
 @routes.route("/racertrailmap", methods=["POST"])
@@ -483,7 +493,7 @@ def get_active_runners():
                 "racer_id": runner.RacerID,
                 "first_name": runner.FirstName,
                 "last_name": runner.LastName,
-                "start_time": runner.StartTime.starttime("%Y-%m-%d %H:%M:%S")
+                "start_time": to_iso_z(runner.StartTime)
             }
             for runner in active_runners
         ]
@@ -567,7 +577,7 @@ def get_trail_leaderboard_data():
                     "racer_id": racer.id,
                     "first_name": racer.first_name,
                     "last_name": racer.last_name,
-                    "start_time": entry.start_time.starttime("%Y-%m-%d %H:%M:%S")
+                    "start_time": to_iso_z(entry.StartTime)
                 }
                 for entry, racer in active_entries
             ]
