@@ -37,7 +37,8 @@ CREATE TABLE trails (
     SecondTenPoints INT DEFAULT NULL,
     ping_pong_balls_remaining INT DEFAULT 10,
     crystals_remaining INT DEFAULT 10,
-    time_limit_minutes INT NOT NULL --safety flag
+    time_limit_minutes INT NOT NULL, --safety flag
+    Color VARCHAR(20) DEFAULT NULL
 );
 
 -- Create the bonus objectives table

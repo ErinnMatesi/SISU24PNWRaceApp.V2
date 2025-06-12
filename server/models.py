@@ -40,6 +40,7 @@ class Trail(db.Model):
     ping_pong_balls_remaining = db.Column("ping_pong_balls_remaining", db.Integer, default=10)
     crystals_remaining = db.Column("crystals_remaining", db.Integer, default=10)
     time_limit_minutes = db.Column("time_limit_minutes", db.Integer, nullable=False)
+    color = db.Column("color", db.String(20), nullable=True)
 
 # Racer-Trail Mapping Model (Active Racers)
 class RacerTrailMap(db.Model):

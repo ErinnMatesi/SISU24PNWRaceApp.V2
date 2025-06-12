@@ -70,6 +70,12 @@ const Leaderboard = () => {
     const info = trailInfo[trail.trail_id] || {};
     const now = new Date();
 
+    const formatDuration = (mins) => {
+      const hrs = Math.floor(mins / 60);
+      const minutes = mins % 60;
+      return `${hrs}hr ${String(minutes).padStart(2, '0')}min`;
+    };
+
     return (
         <div key={trail.trail_id} className="trail-box">
           <div
@@ -81,7 +87,7 @@ const Leaderboard = () => {
           </div>
           <div className="trail-content">
             <p className="bonus-remainders">
-              Gold Remaining: {trail.first_ten_points} <br></br> Silver Remaining: {trail.second_ten_points}
+              Gold Remaining: {trail.ping_pong_balls_remaining} <br></br> Silver Remaining: {trail.crystals_remaining}
             </p>
             <ul className="racer-list">
               {(trail.active_runners || []).map((runner) => {
@@ -94,7 +100,7 @@ const Leaderboard = () => {
                     key={runner.racer_id}
                     className={isOverTime ? "overtime" : ""}
                   >
-                    {runner.first_name} {runner.last_name} — {minsOut} min
+                    {runner.first_name} {runner.last_name} — Out {formatDuration(minsOut)}
                     {isOverTime && " 🚩 "}
                   </li>
                 );

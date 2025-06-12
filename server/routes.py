@@ -111,7 +111,8 @@ def get_all_trails():
         "distance": t.distance,
         "elevation_gain": t.elevation_gain,
         "base_points": t.base_points,
-        "time_limit_minutes": t.time_limit_minutes
+        "time_limit_minutes": t.time_limit_minutes,
+        "color": t.color
     } for t in trails])
 
 @routes.route("/trails/<int:id>", methods=["GET"])
@@ -123,7 +124,10 @@ def get_trail(id):
         "distance": trail.distance,
         "elevation_gain": trail.elevation_gain,
         "base_points": trail.base_points,
-        "time_limit_minutes": trail.time_limit_minutes
+        "first_ten_points": trail.first_ten_points,
+        "second_ten_points": trail.second_ten_points,
+        "time_limit_minutes": trail.time_limit_minutes,
+        "color": trail.color
     })
 
 @routes.route("/trails", methods=["POST"])
@@ -132,7 +136,15 @@ def add_trail():
     new_trail = Trail(**data)
     db.session.add(new_trail)
     db.session.commit()
-    return jsonify({"message": "Trail added successfully!"}), 201
+    return jsonify({
+        "id": new_trail.id,
+        "name": new_trail.name,
+        "distance": new_trail.distance,
+        "elevation_gain": new_trail.elevation_gain,
+        "base_points": new_trail.base_points,
+        "time_limit_minutes": new_trail.time_limit_minutes,
+        "color": new_trail.color,
+    }), 201
 
 @routes.route("/trails/<int:id>", methods=["PUT"])
 def update_trail(id):
@@ -141,7 +153,15 @@ def update_trail(id):
     for key, value in data.items():
         setattr(trail, key, value)
     db.session.commit()
-    return jsonify({"message": "Trail updated successfully!"})
+    return jsonify({
+        "id": trail.id,
+        "name": trail.name,
+        "distance": trail.distance,
+        "elevation_gain": trail.elevation_gain,
+        "base_points": trail.base_points,
+        "time_limit_minutes": trail.time_limit_minutes,
+        "color": trail.color,
+    })
 
 @routes.route("/trails/<int:id>", methods=["DELETE"])
 def delete_trail(id):
@@ -254,12 +274,12 @@ def check_in(racer_id):
 
         if bonus_type == "first_ten":
             bonus_points = first_ten_points
-            if trail.first_ten_points and trail.first_ten_points > 0:
-                trail.first_ten_points -= 1
+            if trail.first_ten_points and trail.ping_pong_balls_remaining > 0:
+                trail.ping_pong_balls_remaining -= 1
         elif bonus_type == "second_ten":
             bonus_points = second_ten_points
-            if trail.second_ten_points and trail.second_ten_points > 0:
-                trail.second_ten_points -= 1
+            if trail.second_ten_points and trail.crystals_remaining > 0:
+                trail.crystals_remaining -= 1
 
         points_earned = base_points + bonus_points
 
@@ -586,6 +606,7 @@ def get_trail_leaderboard_data():
                 "trail_id": trail.id,
                 "first_ten_points": trail.first_ten_points,
                 "second_ten_points": trail.second_ten_points,
+                "color": trail.color,
                 "active_runners": active_runners
             })
 
