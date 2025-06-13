@@ -1,14 +1,3 @@
-@font-face {
-  font-family: 'NESFont';
-  src: url('../../../public/assets/fonts/the-legend-of-zelda-nes.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-body {
-  font-family: 'NESFont', sans-serif;
-}
-
 .section-header {
   width: 100%;
   max-width: 400px;
@@ -30,15 +19,15 @@ body {
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+  max-height: 40%;
 }
 
 .category-box {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.4);
   padding: 1rem;
   border-radius: 8px;
   max-width: 20%;
   text-align: left;
-  font-size: .5rem;
 }
 
 .category-header-image {
@@ -47,15 +36,20 @@ body {
 
 .category-header {
   margin: 0;
+  font-size: 1rem;
 }
 
-/* .category-list {
-  margin-block-start: 0.5em;
-} */
+.category-list {
+  
+}
 
 ul {
     margin-block-start: 1em;
     padding-inline-start: 5px;
+}
+
+.category-names {
+  font-size: 1rem;
 }
 
 .trail-section {
@@ -65,10 +59,19 @@ ul {
   width: 100%;
   justify-content: space-around;
   margin-bottom: 1rem;
+  max-height: 40%;
+}
+
+.trail-box {
+  background-color: rgba(5, 5, 5, 0.4);
+  margin: .5rem;
+  padding: .5rem;
+  border-radius: 8px;
+  max-width: 12%;
 }
 
 .trail-header {
-  text-align: center;
+  text-align:center
 }
 
 .trail-name {
@@ -78,16 +81,8 @@ ul {
 }
 
 .trail-stats {
-  font-size: .75rem;
+  font-size: 1rem;
   margin: 0;
-}
-
-.trail-box {
-  background-color: rgba(5, 5, 5, 0.5);
-  margin: .5rem;
-  padding: .5rem;
-  border-radius: 8px;
-  max-width: 12%;
 }
 
 .trail-content {
@@ -100,5 +95,5 @@ ul {
 }
 
 .racer-list {
-  font-size: .5rem;
+  font-size: .75rem;
 }

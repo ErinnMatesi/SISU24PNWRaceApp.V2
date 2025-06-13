@@ -53,7 +53,7 @@ const Leaderboard = () => {
       
       <ul className="category-list">
         {(categoryData[key] || []).map((entry, index) => (
-          <li key={`${key}-${entry.id}`}>
+          <li className="category-names" key={`${key}-${entry.id}`}>
             {index + 1}.{" "}
             {key === "teams_24hr"
               ? `${entry.team_name}: ${entry.total_points} `

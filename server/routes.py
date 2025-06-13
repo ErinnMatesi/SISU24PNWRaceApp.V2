@@ -606,6 +606,8 @@ def get_trail_leaderboard_data():
                 "trail_id": trail.id,
                 "first_ten_points": trail.first_ten_points,
                 "second_ten_points": trail.second_ten_points,
+                "ping_pong_balls_remaining": trail.ping_pong_balls_remaining,
+                "crystals_remaining": trail.crystals_remaining,
                 "color": trail.color,
                 "active_runners": active_runners
             })

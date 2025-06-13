@@ -1,11 +1,26 @@
+@font-face {
+  font-family: 'ZeldaNES';
+  src: url('../public/assets/fonts/the-legend-of-zelda-nes.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ZeldaPast';
+  src: url('../public/assets/fonts/the-legend-of-zelda-a-link-to-the-past-ext.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-    width: 100%;
+  width: 100%;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'ZeldaPast', sans-serif;
 }
 
 ul, ol {
@@ -34,6 +49,19 @@ input, textarea, select {
   font: inherit;
   border: none;
   outline: none;
+}
+
+nav,
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'ZeldaNES', sans-serif;
+}
+
+li,
+.message,
+select,
+option,
+button {
+  font-family: 'ZeldaPast', sans-serif;
 }
 
 code {
