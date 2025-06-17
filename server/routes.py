@@ -497,25 +497,25 @@ def remove_racer_trail_map(racer_id):
 @routes.route("/active-runners", methods=["GET"])
 def get_active_runners():
     try:
-        # Query for all active runners from the racertrailmap table
-        active_runners = db.session.execute(
-            """
-            SELECT r.RacerID, r.FirstName, r.LastName, m.StartTime
-            FROM racers r
-            JOIN racertrailmap m ON r.RacerID = m.RacerID
-            ORDER BY m.StartTime ASC
-            """
-        ).fetchall()
-
-        # Format the response
+        # Query active runners with their trail and bib information
+        results = (
+            db.session.query(RacerTrailMap, Racer, Trail)
+            .join(Racer, RacerTrailMap.racer_id == Racer.id)
+            .join(Trail, RacerTrailMap.trail_id == Trail.id)
+            .order_by(RacerTrailMap.start_time.asc())
+            .all()
+        )
         runners_list = [
             {
-                "racer_id": runner.RacerID,
-                "first_name": runner.FirstName,
-                "last_name": runner.LastName,
-                "start_time": to_iso_z(runner.StartTime)
+                "racer_id": racer.id,
+                "bib_number": racer.bib_number,
+                "first_name": racer.first_name,
+                "last_name": racer.last_name,
+                "trail_id": trail.id,
+                "trail_name": trail.name,
+                "start_time": to_iso_z(entry.start_time),
             }
-            for runner in active_runners
+            for entry, racer, trail in results
         ]
 
         return jsonify(runners_list), 200

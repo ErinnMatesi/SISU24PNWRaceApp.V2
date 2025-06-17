@@ -1,0 +1,14 @@
+.active-runners-container {
+  max-width: 40%;
+}
+
+.active-runners-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.active-runners-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid #ddd;
+}
