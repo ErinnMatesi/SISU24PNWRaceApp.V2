@@ -18,13 +18,14 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content:space-between;
   max-height: 40%;
 }
 
 .category-box {
   background-color: rgba(0, 0, 0, 0.4);
-  padding: 1rem;
+  padding: .5rem;
+  margin: .5rem;
   border-radius: 8px;
   max-width: 20%;
   text-align: left;
@@ -32,11 +33,15 @@
 
 .category-header-image {
   background-image: url('../../../public/assets/images/headers/LeaderHeader.png');
+  min-height: 50px;
 }
 
 .category-header {
   margin: 0;
   font-size: 1rem;
+  text-align: center;
+  padding-top: 15px;
+  text-shadow: 2px 2px 8px black
 }
 
 .category-list {
@@ -71,7 +76,8 @@ ul {
 }
 
 .trail-header {
-  text-align:center
+  text-align:center;
+  text-shadow: 2px 2px 8px black
 }
 
 .trail-name {
